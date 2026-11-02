@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d0c">
+<title>Spider VPN</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 20 6 10M18 25 4 25M18 30 6 40M30 20 42 10M30 25 44 25M30 30 42 40M20 17 14 6M28 17 34 6"/></g><ellipse cx="24" cy="27" rx="8" ry="10" fill="currentColor"/><circle cx="24" cy="15" r="4.5" fill="currentColor"/></svg>
+      <span class="brand-name">SPIDER VPN</span>
+    </div>
+    <span class="badge" data-i18n="proto">Prototype</span>
+  </header>
+
+  <main>
+    <section class="screen active" id="home">
+      <p class="status" id="statusText"></p>
+      <p class="sub" id="statusSub"></p>
+      <div class="orb-wrap">
+        <button class="orb" id="orb" aria-live="polite"><span class="ring r1"></span><span class="ring r2"></span><svg viewBox="0 0 24 24" class="pw"><path d="M12 3v9M6.3 6.8a8 8 0 1 0 11.4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <button class="card sel" id="selCard" data-go="servers"></button>
+      <div class="grid">
+        <div class="card stat"><small data-i18n="ping">Ping</small><b id="hPing">—</b></div>
+        <div class="card stat"><small data-i18n="duration">Duration</small><b id="hDur">00:00:00</b></div>
+        <div class="card stat"><small data-i18n="down">Download</small><b id="hDown">0 KB/s</b></div>
+        <div class="card stat"><small data-i18n="up">Upload</small><b id="hUp">0 KB/s</b></div>
+        <div class="card stat wide"><small data-i18n="total">Total traffic</small><b id="hTot">0 MB</b></div>
+      </div>
+    </section>
+
+    <section class="screen" id="servers">
+      <h1 data-i18n="servers">Servers</h1>
+      <div class="row"><input id="q" type="search" data-ph="search"><select id="sort"><option value="name" data-i18n="sName"></option><option value="ping" data-i18n="sPing"></option><option value="fav" data-i18n="sFav"></option></select></div>
+      <div class="row"><button class="btn" id="autoBtn" data-i18n="auto">Auto select</button><button class="btn ghost" id="demoPing" data-i18n="demoPing">Demo ping</button></div>
+      <label class="chk"><input type="checkbox" id="group"> <span data-i18n="group">Group by country</span></label>
+      <p class="note" id="pingNote"></p>
+      <div id="serverList"></div>
+    </section>
+
+    <section class="screen" id="configs">
+      <h1 data-i18n="configs">Configurations</h1>
+      <textarea id="paste" rows="3" data-ph="pasteHint" spellcheck="false"></textarea>
+      <div class="row"><button class="btn" id="saveCfg" data-i18n="save">Save</button><button class="btn ghost" id="fileBtn" data-i18n="file">Import file</button><button class="btn ghost" id="qrBtn" data-i18n="scan">Scan QR</button></div>
+      <input type="file" id="file" accept=".txt,.json,text/plain" hidden>
+      <p class="err" id="cfgErr" role="alert"></p>
+      <div id="cfgList"></div>
+    </section>
+
+    <section class="screen" id="stats">
+      <h1 data-i18n="stats">Statistics</h1>
+      <p class="note warn" data-i18n="simNote">Simulated demonstration data. No real traffic is measured.</p>
+      <div class="grid">
+        <div class="card stat"><small data-i18n="down">Download</small><b id="sDown">0</b></div>
+        <div class="card stat"><small data-i18n="up">Upload</small><b id="sUp">0</b></div>
+        <div class="card stat"><small data-i18n="total">Total traffic</small><b id="sTot">0</b></div>
+        <div class="card stat"><small data-i18n="session">Session</small><b id="sDur">00:00:00</b></div>
+      </div>
+      <div class="card"><small data-i18n="week">Last 7 days (simulated)</small><svg id="chart" viewBox="0 0 280 120" preserveAspectRatio="none"></svg></div>
+    </section>
+
+    <section class="screen" id="settings">
+      <h1 data-i18n="settings">Settings</h1>
+      <div class="card list">
+        <label class="line"><span data-i18n="lang">Language</span><select id="lang"><option value="en">English</option><option value="fa">فارسی</option></select></label>
+        <label class="line"><span data-i18n="dark">Dark theme</span><input type="checkbox" class="sw" id="dark"></label>
+        <label class="line"><span data-i18n="anim">Animations</span><input type="checkbox" class="sw" id="anim"></label>
+        <button class="line" data-go="configs"><span data-i18n="manage">Manage configurations</span><i>›</i></button>
+        <button class="line" data-go="about"><span data-i18n="about">About Spider VPN</span><i>›</i></button>
+        <button class="line danger" id="clear"><span data-i18n="clear">Clear local data</span></button>
+      </div>
+    </section>
+
+    <section class="screen" id="about">
+      <div class="about">
+        <svg class="logo big" viewBox="0 0 48 48"><use href="#"/></svg>
+        <h1>SPIDER VPN</h1>
+        <p data-i18n="tag">A modern VPN client interface.</p>
+        <p class="by"><span data-i18n="by">Created by:</span><br><b data-i18n="author">Mehdi Ebrahimi</b></p>
+        <p class="note">Version: 1.0.0</p>
+        <p class="note warn" data-i18n="noVpn">Frontend prototype. No real VPN connection exists yet.</p>
+        <button class="btn ghost" data-go="settings" data-i18n="back">Back</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav" id="nav">
+    <button data-go="home" class="on"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg><span data-i18n="home">Home</span></button>
+    <button data-go="servers"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c3 3 3 13 0 16M12 4c-3 3-3 13 0 16"/></svg><span data-i18n="servers">Servers</span></button>
+    <button data-go="configs"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span data-i18n="configsShort">Configs</span></button>
+    <button data-go="stats"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span data-i18n="stats">Stats</span></button>
+    <button data-go="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg><span data-i18n="settings">Settings</span></button>
+  </nav>
+
+  <div class="modal" id="qrModal" hidden><div class="sheet">
+    <video id="qrVideo" playsinline muted></video>
+    <p class="note" id="qrMsg"></p>
+    <button class="btn ghost" id="qrClose" data-i18n="close">Close</button>
+  </div></div>
+  <div class="modal" id="editModal" hidden><div class="sheet">
+    <label data-i18n="name">Name</label><input id="editName">
+    <div class="row"><button class="btn" id="editOk" data-i18n="save">Save</button><button class="btn ghost" id="editNo" data-i18n="close">Close</button></div>
+  </div></div>
+  <div class="toast" id="toast" role="status"></div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
