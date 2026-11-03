@@ -1,0 +1,45 @@
+name: Build libXray Android
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout libXray
+        uses: actions/checkout@v4
+        with:
+          repository: XTLS/libXray
+          path: libXray
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git openjdk-17-jdk
+
+      - name: Build libXray
+        working-directory: libXray
+        run: |
+          python3 build/main.py android
+
+      - name: Upload build outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: libXray-Android
+          path: libXray/
+          if-no-files-found: error
