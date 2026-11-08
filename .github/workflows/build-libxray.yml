@@ -1,11 +1,19 @@
-name: Build libXray Android
+
+name: Build Spider Xray Engine
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      CGO_ENABLED: "1"
 
     steps:
       - name: Checkout libXray
@@ -17,29 +25,42 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 'stable'
+          go-version: stable
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.x"
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install build tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git openjdk-17-jdk
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r29
+          add-to-path: true
 
-      - name: Build libXray
+      - name: Build Android libXray
         working-directory: libXray
-        run: |
-          python3 build/main.py android
+        run: python3 build/main.py android
 
-      - name: Upload build outputs
+      - name: Prepare Android artifacts
+        run: |
+          mkdir -p dist/android
+          cp libXray/libXray.aar dist/android/
+          cp libXray/libXray-sources.jar dist/android/
+
+      - name: Upload Xray Engine
         uses: actions/upload-artifact@v4
         with:
-          name: libXray-Android
-          path: libXray/
+          name: Spider-Xray-Android
+          path: dist/android/
           if-no-files-found: error
+          
