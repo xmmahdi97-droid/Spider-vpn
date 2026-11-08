@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 60
 
     env:
@@ -40,6 +40,9 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
 
       - name: Setup Android NDK
         uses: nttld/setup-ndk@v1
@@ -51,11 +54,18 @@ jobs:
         working-directory: libXray
         run: python3 build/main.py android
 
-      - name: Prepare Android artifacts
+      - name: Inspect Build Output
+        working-directory: libXray
+        run: |
+          echo "Build output files:"
+          find . -type f \( -name "*.aar" -o -name "*.jar" -o -name "*.so" \)
+
+      - name: Prepare Android Artifacts
         run: |
           mkdir -p dist/android
-          cp libXray/libXray.aar dist/android/
-          cp libXray/libXray-sources.jar dist/android/
+          find libXray -type f \( -name "*.aar" -o -name "*.jar" -o -name "*.so" \) \
+            -exec cp --parents {} dist/android/ \;
+          test -n "$(find dist/android -type f -name '*.aar' -print -quit)"
 
       - name: Upload Xray Engine
         uses: actions/upload-artifact@v4
