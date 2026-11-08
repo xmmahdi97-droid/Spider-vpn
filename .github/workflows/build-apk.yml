@@ -1,3 +1,4 @@
+
 name: Build Spider VPN APK
 
 on:
@@ -6,36 +7,75 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Spider VPN
         uses: actions/checkout@v4
+
+      - name: Checkout Xray Engine
+        uses: actions/checkout@v4
+        with:
+          repository: XTLS/libXray
+          path: libXray
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r29
+          add-to-path: true
+
+      - name: Build Xray Engine
+        working-directory: libXray
+        run: python3 build/main.py android
+
+      - name: Add Xray to Spider
+        run: |
+          mkdir -p app/libs
+          cp libXray/libXray.aar app/libs/libXray.aar
+          test -s app/libs/libXray.aar
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Build APK
+      - name: Build Spider APK
         run: gradle assembleDebug
 
-      - name: Upload APK
+      - name: Upload Spider APK
         uses: actions/upload-artifact@v4
         with:
-          name: SpiderVPN-debug-apk
+          name: SpiderVPN-Xray-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          
